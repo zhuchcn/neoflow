@@ -13,6 +13,8 @@ params.cpu = 0
 params.vcf_file = null // mapping file
 params.out_dir = "./output"
 
+params.add_reference_seqs = true
+
 
 def get_absolute_path(f,out_file){
 	myFile = file(f)
@@ -70,6 +72,8 @@ def helpMessage() {
       --ref_dir               ANNOVAR annotation data folder
       --ref_ver               The genome version, hg19 or hg38, default is "hg19"
       --out_dir               Output folder, default is "./output"
+	  --add_reference_seqs    Whether or not to add reference protein sequences to the output
+	                          database file
       --cpu                   The number of CPUs
       --help                  Print help message
 
@@ -91,6 +95,8 @@ cpus = params.cpu
 annovar_buildver = params.ref_ver //
 annovar_protocol = params.protocol //
 annovar_anno_dir  = file(params.ref_dir)
+
+customprodbj_add_reference_seqs = params.add_reference_seqs as Boolean
 
 out_dir = file(params.out_dir)
 
@@ -218,10 +224,10 @@ process database_construction {
 		-f ${anno_f} \
 		-d ${mrna_fa} \
 		-r ${gene_anno} \
-		-t \
 		-o ./ \
 		-p2 ${experiment_name} \
-		-ref ref.fasta
+		-ref ref.fasta \
+		${customprodbj_add_reference_seqs ? '-t' : ''}
 	"""
 
 }
