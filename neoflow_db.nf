@@ -1,11 +1,11 @@
 #!/usr/bin/env nextflow
 
-params.help       = false 
+params.help       = false
 // Annovar parameters
 params.ref_ver   = "hg19"
 params.protocol   = "refGene"
 //params.operation  = "g"
-params.ref_dir = false // annotation data folder for annovar 
+params.ref_dir = false // annotation data folder for annovar
 params.annovar_dir = false
 
 
@@ -88,7 +88,7 @@ out_dir = file(params.out_dir)
 cpus = params.cpu
 
 // parameters for varaint annotation: Annovar
-annovar_buildver = params.ref_ver // 
+annovar_buildver = params.ref_ver //
 annovar_protocol = params.protocol //
 annovar_anno_dir  = file(params.ref_dir)
 
@@ -104,7 +104,7 @@ if(!out_dir.isDirectory()){
 mapping_vcf_file = file(params.vcf_file)
 
 //
-annovar_operation = "g" 
+annovar_operation = "g"
 
 /*
  * validate input files
@@ -144,15 +144,15 @@ process pre_processing {
 
 	library(dplyr)
 	library(readr)
-	
+
 	a = read.delim("${mapping_f}")
 	experiment_names = unique(a[,"experiment"])
 	for(f in experiment_names){
-		dat = a %>% filter(experiment == f) 
+		dat = a %>% filter(experiment == f)
 		out_file = paste(f,"-mapping_file.tsv",sep="")
 		write_tsv(dat,out_file)
 	}
-	
+
 	"""
 }
 
@@ -175,13 +175,14 @@ process variant_annotation {
 	script:
 	experiment_name = "${single_experiment_map_file}".replaceFirst(/-mapping_file.tsv/, "")
 	ofile = experiment_name + "_anno.txt"
-	//annovar_pl = 
+	//annovar_pl =
 	"""
 	#!/bin/bash
 	#!/usr/bin/env /usr/local/bin/python
 	python $baseDir/bin/variant_annotation.py -i ${single_experiment_map_file} \
 		-d ${annovar_anno_dir} \
 		-b ${annovar_buildver} \
+		-p ${annovar_protocol} \
 		-c ${cpus} \
 		-o ./ \
 		-f ${ofile} \
@@ -257,7 +258,7 @@ process generate_decoy_db{
 	set val(experiment_name), file(format_db) from format_db_set
 
 	output:
-	file out_target_decoy_db 
+	file out_target_decoy_db
 
 	script:
 	out_target_decoy_db = "${experiment_name}_target_decoy.fasta"
